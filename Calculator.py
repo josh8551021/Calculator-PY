@@ -15,6 +15,7 @@ def find_number(chars, decimal_found=False):
     :param decimal_found:
     :return: resultant number
     """
+    
     new_num = ""
     for digit_q in chars:
         if decimal_found:
@@ -62,7 +63,6 @@ def balance_parens(expr):
     :return: atoms: expression with balanced parentheses
     """
     atoms = expr
-    idx = 0
     
     start_parens = 0
     end_parens = 0
@@ -167,7 +167,7 @@ def match_parens(atoms):
     
     :param atoms: a list of atoms (numbers and symbols)
     :return: a dictionary where key-value pairs represent open parentheses and their corresponding closing parentheses
-    """ 
+    """
     
     paren_locs = {}
     paren_stack = []
@@ -224,16 +224,12 @@ def solve_expr(atoms, paren_pairs=None):
     :return: simplified list of atoms
     """
     
+    # one-parameter case
     if paren_pairs is None:
         return solve_expr(atoms, match_parens(atoms))
     
-    if paren_pairs == {}:
-        return perform_operations(atoms)
-    
-    while paren_pairs != {}:
-        sorted_open_parens = sorted(paren_pairs.keys())
-        # last_close = sorted(paren_pairs.values())[-1]
-        
+    # recursion to eliminate parentheses
+    while paren_pairs != {}:        
         first_open = atoms.index('(')
         first_outer_close = paren_pairs.pop(first_open)
         
@@ -241,20 +237,20 @@ def solve_expr(atoms, paren_pairs=None):
         sub_parens = match_parens(sub_expr)
         
         simp_expr = solve_expr(sub_expr, sub_parens)
+        
         atoms = atoms[:first_open] + [simp_expr] + atoms[first_outer_close + 1:]
         paren_pairs = match_parens(atoms)
     
     return perform_operations(atoms)
 
 
-def check_operators(calculation_string):
+def all_valid_operators(calculation_string):
     """
     This function tests the initial calculation string for common invalid operators.
     
     :param calculation_string: initial calculation string
     :return: whether all operators are valid or not
     """
-    
     
     for comb in INVALID_OPERATOR_COMBINATIONS:
         if comb in calculation_string:
@@ -269,6 +265,7 @@ def is_valid(atoms):
     :param atoms: list of atoms
     :return: a boolean, whether the expression is sound or not
     """
+    
     if is_operator(atoms[-1]):
         return False
     
@@ -293,7 +290,7 @@ def run_calculator():
         
         calculation = balance_parens(calculation)
         calculation = fetch_carets(calculation)
-        if not check_operators(calculation):
+        if not all_valid_operators(calculation):
             print("Enter a valid calculation.")
             continue
             
@@ -306,5 +303,5 @@ def run_calculator():
         
         print(solution)
 
+
 run_calculator()
-#print(parenthesis_check(calculation))
